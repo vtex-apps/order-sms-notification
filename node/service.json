@@ -1,0 +1,14 @@
+{
+  "stack": "nodejs",
+  "memory": 64,
+  "runtimeArgs": [
+    "--optimize_for_size",
+    "--max_old_space_size=48"
+  ],
+  "routes": {
+    "sms": {
+      "path": "/_v/order-sms-notification",
+      "public": true
+    }
+  }
+}
