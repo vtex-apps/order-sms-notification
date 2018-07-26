@@ -129,6 +129,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
   console.log('>>>>> orderId: ', body.orderId)
   console.log('>>>>> accountName: ', body.accountName)
 
+  /*
   //vai no mktplace e pega o seller responsável pela entrega do pedido
   const mktplaceOrderData = await getOrder(body.accountName, body.orderId, authToken)
   console.log('>>>> SELLER ORDER ID: ' + mktplaceOrderData.sellerOrderId + ' SELLER: ' + mktplaceOrderData.shippingData.sellers[0].id)
@@ -145,9 +146,14 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
 
   let sellerAccountName = mktplaceOrderData.shippingData.sellers[0].id
   let sellerOrderId = mktplaceOrderData.sellerOrderId
-  let storeEntityData = null
+  */
 
-  /* try {  storeEntityData = await checkStoreEntity(accountName, authToken)
+  
+
+  /* 
+  //valida se o schema stores tem propriedade mobileNumber
+  let storeEntityData = null
+  try {  storeEntityData = await checkStoreEntity(accountName, authToken)
   } catch (e) {
       return rejectWithError(
         `Error on request from master data client to verify Entity schema with accountName ${accountName}: ${e}`,
@@ -164,7 +170,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
   let storeData = null
 
   try {
-    storeData = await getSellerStoreData(sellerAccountName, authToken)
+    storeData = await getSellerStoreData(body.accountName, authToken)
   } catch (e) {
     console.log(e)
     return rejectWithError(
@@ -172,7 +178,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
     )
   }
   sendLog(
-    `StoreData received from accountName ${sellerAccountName}`,
+    `StoreData received from accountName ${body.accountName}`,
   )
 
   console.log('>>>> SMS will notify: ', storeData[0].mobileNumber)
@@ -182,15 +188,24 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
     return
   }
   
+  
 
-
-    const orderData = await getOrder(sellerAccountName, sellerOrderId, authToken)
-    console.log('>>>> ORDER ID: ' + orderData.orderId + ' SLA: ' + orderData.shippingData.logisticsInfo[0].deliveryChannel)
+    const orderData = await getOrder(body.accountName, body.orderId, authToken)
 
     if(orderData === null) {
       console.log('Exiting function, order data not found.')
       return
     }
+    
+    // validar se é pedido do instore, nesse caso sair da funcao
+    if(orderData.customData.customApps[0].fields.cart-type = "INSTORE" || orderData.customData[0].fields[0].cart-type = "INSTORE_DELIVERY"){
+      console.log('Exiting function, order is inStore.')
+      return
+    }
+
+    console.log('>>>> ORDER ID: ' + orderData.orderId + ' SLA: ' + orderData.shippingData.logisticsInfo[0].deliveryChannel)
+
+    
 
     /*
     const string = orderData.marketplaceServicesEndpoint.split('an=')
@@ -205,10 +220,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
     
     
     
-/*
-
-
-  let feedOrders = null
+/*  let feedOrders = null
 
   try {
     feedOrders = await checkFeed(accountName, maxLot, authToken)

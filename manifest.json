@@ -17,7 +17,11 @@
     "postreleasy": "vtex publish --public --verbose"
   },
   "billingOptions": {
-    "free": true
+    "free": true,
+    "support": {
+      "email": "oms@vtex.com.br",
+      "url": "https://support.vtex.com/hc/requests"
+    }
   },
 
   "dependencies":{

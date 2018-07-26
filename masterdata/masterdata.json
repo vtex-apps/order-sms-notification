@@ -1,0 +1,236 @@
+[
+  {
+    "entity": "ORDER_FISCAL_CODE",
+    "type": "schemas",
+    "values": [
+      {
+        "id": "ORDER_FISCAL_CODE_SCHEMA",
+        "hooks": [
+          {
+            "name": "send-request",
+            "condition": "updatedIn is null",
+            "active": true,
+            "action": {
+              "type": "http",
+              "uri":
+                "https://api.vtex.com/instore/functions/vtex.instore-functions-save-fiscal-note-v0/run",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "method": "POST",
+              "body": {
+                "orderId": "{!id}",
+                "type": "Output",
+                "accountName": "{!accountName}"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "entity": "CANCEL_ORDER_FISCAL_CODE",
+    "type": "schemas",
+    "values": [
+      {
+        "id": "CANCEL_ORDER_FISCAL_CODE_SCHEMA",
+        "hooks": [
+          {
+            "name": "send-request",
+            "condition": "updatedIn is null",
+            "active": true,
+            "action": {
+              "type": "http",
+              "uri":
+                "https://api.vtex.com/instore/functions/vtex.instore-functions-save-fiscal-note-v0/run",
+              "headers": {
+                "content-type": "application/json"
+              },
+              "method": "POST",
+              "body": {
+                "orderId": "{!id}",
+                "type": "Input",
+                "accountName": "{!accountName}"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "entity": "vtable",
+    "type": "documents",
+    "schemas": ["app"],
+    "values": [
+      {
+        "id": "stores",
+        "name": "stores",
+        "title": "Admin das lojas",
+        "tables": [
+          {
+            "id": "main",
+            "label": "Complete",
+            "title": "Stores",
+            "entity": "stores",
+            "model": "v1",
+            "saveOnChange": true,
+            "fields": {
+              "id": {
+                "width": 200,
+                "label": "Id do Documento"
+              },
+              "name": {
+                "width": 200,
+                "label": "Nome"
+              },
+              "country": {
+                "width": 200,
+                "label": "País"
+              },
+              "address": {
+                "width": 400,
+                "label": "Endereço"
+              },
+              "number": {
+                "width": 100,
+                "label": "Número"
+              },
+              "complement": {
+                "width": 200,
+                "label": "Complemento"
+              },
+              "neighborhood": {
+                "width": 200,
+                "label": "Bairro"
+              },
+              "city": {
+                "width": 200,
+                "label": "Cidade"
+              },
+              "state": {
+                "width": 200,
+                "label": "Estado"
+              },
+              "postalCode": {
+                "width": 200,
+                "label": "CEP"
+              },
+              "latitude": {
+                "width": 50,
+                "label": "Latitude"
+              },
+              "longitude": {
+                "width": 50,
+                "label": "Longitude"
+              },
+              "tradePolicy": {
+                "width": 200,
+                "label": "Política comercial"
+              },
+              "ecommerceSellerId": {
+                "width": 50,
+                "label": "ecommerceSellerId"
+              },
+              "storeSellerId": {
+                "width": 50,
+                "label": "storeSellerId"
+              }
+            },
+            "list": [
+              "id",
+              "name",
+              "country",
+              "tradePolicy",
+              "postalCode",
+              "city",
+              "state",
+              "address",
+              "number",
+              "complement",
+              "neighborhood"
+            ],
+            "editor": {
+              "settings": {
+                "sections": [
+                  {
+                    "name": "Principal",
+                    "fields": [
+                      "id",
+                      "name",
+                      "country",
+                      "postalCode",
+                      "city",
+                      "state",
+                      "address",
+                      "number",
+                      "complement",
+                      "neighborhood"
+                    ]
+                  },
+                  {
+                    "name": "Informações técnicas",
+                    "fields": [
+                      "tradePolicy",
+                      "ecommerceSellerId",
+                      "latitude",
+                      "longitude",
+                      "storeSellerId"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": "vendors",
+        "name": "vendors",
+        "title": "Admin dos vendedores",
+        "tables": [
+          {
+            "id": "main",
+            "label": "Complete",
+            "title": "Vendors",
+            "entity": "vendors",
+            "model": "v1",
+            "saveOnChange": true,
+            "fields": {
+              "id": {
+                "width": 200,
+                "label": "Id do Documento"
+              },
+              "user": {
+                "width": 200,
+                "label": "Email"
+              },
+              "name": {
+                "width": 200,
+                "label": "Nome"
+              },
+              "store": {
+                "width": 300,
+                "relatedApp": "stores",
+                "relatedTable": "main",
+                "label": "Loja"
+              }
+            },
+            "list": ["id", "user", "name", "store"],
+            "editor": {
+              "settings": {
+                "sections": [
+                  {
+                    "name": "Cadastro do vendedor",
+                    "fields": ["id", "user", "name", "store"]
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
