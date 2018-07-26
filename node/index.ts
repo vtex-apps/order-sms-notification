@@ -3,7 +3,7 @@ import { sendLog, configLog } from './log-helper'
 import { getFeed, getOrder } from './order-fetcher'
 import { ColossusContext } from 'colossus';
 import axios from 'axios'
-import {json } from 'co-body'
+import { json } from 'co-body'
 
 const FUNCTION_NAME = 'seller_newOrderSMSNotification'
 
@@ -43,23 +43,23 @@ function postMessageCenterSMS(accountName, mobileNumber, selectedDeliveryChannel
 }
 
 
-function commitOrderFeed(accountName, orderToken, authToken) {
-  const payload = [
-    {
-      commitToken: orderToken
-    }
-  ]
-  console.log('>>>> payload',payload)
-  const url = `http://${accountName}.vtexcommercestable.com.br/api/oms/pvt/feed/orders/status/confirm`
-  return fetchHelper(url, {
-    method: 'POST',
-    body: payload,
-    headers: {
-      'X-Vtex-Proxy-To': `https://${accountName}.vtexcommercestable.com.br`,
-      Authorization: authToken,
-    },
-  })
-}
+// function commitOrderFeed(accountName, orderToken, authToken) {
+//   const payload = [
+//     {
+//       commitToken: orderToken
+//     }
+//   ]
+//   console.log('>>>> payload',payload)
+//   const url = `http://${accountName}.vtexcommercestable.com.br/api/oms/pvt/feed/orders/status/confirm`
+//   return fetchHelper(url, {
+//     method: 'POST',
+//     body: payload,
+//     headers: {
+//       'X-Vtex-Proxy-To': `https://${accountName}.vtexcommercestable.com.br`,
+//       Authorization: authToken,
+//     },
+//   })
+// }
 
 /* async function checkStoreEntity(accountName, authToken) {
   var extraEndpoint = `http://${accountName}.vtexcommercestable.com.br/api/dataentities/stores/schemas/v2`
@@ -92,23 +92,23 @@ function getMessageCenterPayload(mobileNumber, selectedDeliveryChannel, orderId,
   
 }
 
-async function checkFeed(
-  accountName,
-  maxLot = 20,
-  authToken
-) {
-  const orders = await getFeed(accountName, maxLot, authToken)
+// async function checkFeed(
+//   accountName,
+//   maxLot = 20,
+//   authToken
+// ) {
+//   const orders = await getFeed(accountName, maxLot, authToken)
 
-  console.log('Orders retrieved on feed: ', orders)
+//   console.log('Orders retrieved on feed: ', orders)
   
-  if (orders == null) {
-    return
-  }
+//   if (orders == null) {
+//     return
+//   }
 
-  //const feedOrders = orders.filter(({ status }) => status === 'order-accepted' || status === 'waiting-ffmt-authorization' || status === 'window-to-cancel' || status === 'authorize-fulfillment' || status === 'ready-for-handling')
-  //console.log('All orders in feed >>>', feedOrders)
-  return orders
-}
+//   //const feedOrders = orders.filter(({ status }) => status === 'order-accepted' || status === 'waiting-ffmt-authorization' || status === 'window-to-cancel' || status === 'authorize-fulfillment' || status === 'ready-for-handling')
+//   //console.log('All orders in feed >>>', feedOrders)
+//   return orders
+// }
 
 function rejectWithError(errorMessage) {
   sendLog(errorMessage)
@@ -198,7 +198,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
     }
     
     // validar se é pedido do instore, nesse caso sair da funcao
-    if(orderData.customData.customApps[0].fields.cart-type = "INSTORE" || orderData.customData[0].fields[0].cart-type = "INSTORE_DELIVERY"){
+    if(orderData.customData.customApps[0].fields['cart-type'] = "INSTORE" || orderData.customData[0].fields[0].cart-type = "INSTORE_DELIVERY"){
       console.log('Exiting function, order is inStore.')
       return
     }
