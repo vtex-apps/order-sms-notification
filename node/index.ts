@@ -10,7 +10,7 @@ const FUNCTION_NAME = 'seller_newOrderSMSNotification'
 const MD_ENDPOINT = 'https://api.vtex.com'
 
 function getSellerStoreData(accountName, authToken) {
-  const url = `${MD_ENDPOINT}/${accountName}/dataentities/stores/search?_fields=_all`
+  const url = `${MD_ENDPOINT}/${accountName}/dataentities/stores/search/?_schema=v1&_fields=_all`
   return fetchHelper(url, {
     headers: {
       'Proxy-Authorization': authToken,
@@ -21,9 +21,9 @@ function getSellerStoreData(accountName, authToken) {
 }
 
 
-function postMessageCenterSMS(accountName, mobileNumber, selectedDeliveryChannel, orderId, openTextField, authToken) {
+function postMessageCenterSMS(accountName, ctx, mobileNumber, selectedDeliveryChannel, orderId, openTextField, authToken) {
   const payload = getMessageCenterPayload(mobileNumber, selectedDeliveryChannel, orderId, openTextField)
-  const url = `http://sms-provider.vtex.aws-us-east-1.vtex.io/${accountName}/lowbeer/api/sms-provider`
+  const url = `http://sms-provider.vtex.aws-us-east-1.vtex.io/${accountName}/${ctx.vtex.workspace}/api/sms-provider`
 
             return axios({
               headers: {
@@ -36,7 +36,7 @@ function postMessageCenterSMS(accountName, mobileNumber, selectedDeliveryChannel
                 data: payload,
             }).then(function(response){      
                 console.log('o response de sucesso é gigantesco, nao vale a pena logar. Mas deu tudo certo.')
-                return response.data
+                return response
             }).catch(function(error){
                 return error
             })
@@ -118,7 +118,7 @@ function rejectWithError(errorMessage) {
   })
 }
 
-async function sendSMS(accountName: string, authToken: string, ctx: object) {
+async function sendSMS(accountName: string, authToken: string, ctx: ColossusContext) {
   configLog(accountName, FUNCTION_NAME)
   sendLog(
     `Initiating SMS notification for accountName ${accountName}`,
@@ -126,6 +126,8 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
 
   var body = await json(ctx.req)
 
+  console.log('>>>>> workspace: ', ctx.vtex.workspace)
+  console.log('>>>>> body: ', body)
   console.log('>>>>> orderId: ', body.orderId)
   console.log('>>>>> accountName: ', body.accountName)
 
@@ -196,13 +198,16 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
       console.log('Exiting function, order data not found.')
       return
     }
+
+    console.log(orderData)
     
-    // validar se é pedido do instore, nesse caso sair da funcao
-    if(orderData.customData.customApps[0].fields.cart-type = "INSTORE" || orderData.customData[0].fields[0].cart-type = "INSTORE_DELIVERY"){
+    // valida se é pedido do instore, nesse caso sair da funcao -- ainda precisa fazer o loop dentro do customApps
+
+    if(orderData.customData != null && (orderData.customData.customApps[0].fields['cart-type'] === "INSTORE" || orderData.customData[0].fields[0]['cart-type'] === "INSTORE_DELIVERY")){      
       console.log('Exiting function, order is inStore.')
       return
     }
-
+    console.log(orderData.customData)
     console.log('>>>> ORDER ID: ' + orderData.orderId + ' SLA: ' + orderData.shippingData.logisticsInfo[0].deliveryChannel)
 
     
@@ -215,7 +220,12 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
     const deliveryChannel = orderData.shippingData ? orderData.shippingData.logisticsInfo[0].deliveryChannel : null
     const openTextField = orderData.openTextField ? orderData.openTextField.value : null
     console.log('pedido - '+ orderData.orderId + '- tipo de entrega: ' + deliveryChannel + ' - observacao: ' +  openTextField)
-    const response = await postMessageCenterSMS(body.accountName, storeData[0].mobileNumber, deliveryChannel, orderData.orderId, openTextField, authToken)
+    const response = await postMessageCenterSMS(body.accountName, ctx, storeData[0].mobileNumber, deliveryChannel, orderData.orderId, openTextField, authToken)
+    return {
+      ...ctx,
+      body: response.data,
+      status: response.status,
+    }
   
     
     
@@ -285,7 +295,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: object) {
 
   */
 
-  return
+  
 }
 
 export default {
@@ -294,12 +304,13 @@ export default {
       var { vtex: { account, authToken } } = ctx
       authToken = ctx.vtex.authToken
       ctx.set('Cache-Control', 'no-cache')
-      await sendSMS(account, authToken, ctx)
-      ctx.response.status = 200
-      ctx.response.body = {
-        code: 'success',
-        message: 'SMS sent successfuly'
-      }
+      ctx = await sendSMS(account, authToken, ctx)
+      console.log("-------", ctx.status)
+      // ctx.response.status = 200
+      // ctx.response.body = {
+      //   code: 'success',
+      //   message: 'SMS sent successfuly'
+      // }
     }
   },
 }
