@@ -1,7 +1,7 @@
 import { Apps } from '@vtex/api'
 import axios from 'axios'
-import { ColossusContext } from 'colossus'
 import { json } from 'co-body'
+import { ColossusContext } from 'colossus'
 
 import pkg from '../manifest.json'
 import { configLog, sendLog } from './log-helper'
