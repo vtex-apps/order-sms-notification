@@ -82,9 +82,9 @@ async function sendSMS(accountName: string, authToken: string, ctx: ColossusCont
     return {
       data: {
         error: e,
-        message: 'Error getting mobile number from app settings',
+        message: 'Error getting mobile number from app settings (vbase)',
       },
-      status: 500
+      status: 503
     }
   }
   
@@ -98,16 +98,28 @@ async function sendSMS(accountName: string, authToken: string, ctx: ColossusCont
       status: 500,
     }
   }
+  console.log(`\n\n [SETTINGS] - got this mobile number: ${mobileNumber} \n \n`)
   
-  
-    console.log(`\n\n [MASTER DATA] - getting order data \n \n`)
-    const orderData = await getOrder(body.accountName, body.orderId, authToken)
-
-    if(orderData === null) {
-      console.log(`\n\n [MASTER DATA] - Exiting function, order data not found... \n \n`)
+    console.log(`\n\n [OMS] - getting order data \n \n`)
+    let orderData
+    try {
+      orderData = await getOrder(body.accountName, body.orderId, authToken)
+    } catch (e) {
       return {
         data: {
-          message: 'Exiting function, order data not found...'
+          error: e.error,
+          message: 'Exiting function, error getting order data...'
+        },
+        status: 503
+      }
+    }
+    console.log(`\n\n [OMS] - GOT THIS: ${orderData} \n \n`)
+
+    if(!orderData) {
+      console.log(`\n\n [OMS] - Exiting function, order data is empty... \n \n`)
+      return {
+        data: {
+          message: 'Exiting function, order data is empty...'
         },
         status: 500
       }
@@ -118,9 +130,9 @@ async function sendSMS(accountName: string, authToken: string, ctx: ColossusCont
       console.log(`\n\n [MASTER DATA] - Exiting function, order is NOT inStore... \n \n`)
       return {
         data: {
-          message: 'Exiting function, order is NOT inStore...'
+          message: 'Exiting function, order is NOT inStore so message was not sent...'
         },
-        status: 500
+        status: 204 // returns 2xx so masterdata doesn't retry, since it's pointless
       }
     }
     console.log(`\n\n [MASTER DATA] - order ${orderData.orderId} is inStore:\n SLA: ${orderData.shippingData.logisticsInfo[0].deliveryChannel} \n Custom data: ${orderData.customData} \n \n`)
