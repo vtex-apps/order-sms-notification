@@ -11,25 +11,7 @@ import { getOrder } from './order-fetcher'
 const FUNCTION_NAME = 'seller_newOrderSMSNotification'
 const APP_MAJOR = pkg.version.split('.')[0]
 const SPLUNK_ENDPOINT = 'splunk-heavyforwarder-public.vtex.com:8088'
-
-function splunkCustomFetcher(context) {
-  const headers = context.headers || {}
-  return axios({
-    ...context,
-    headers: {
-      ...headers,
-      'X-Vtex-Proxy-To': `https://${SPLUNK_ENDPOINT}`,
-    }
-  })
-}
-
 const splunkEvents = new SplunkEvents()
-splunkEvents.config({
-  debug: true,
-  endpoint: `http://${SPLUNK_ENDPOINT}`,
-  request: splunkCustomFetcher,
-  token: '473bad07-24e0-4c46-964e-d6f059ec8789',
-})
 
 function logEvent(level, type, workflow, event) {
   console.log(`\n\n [SPLUNK] - Sending log, level: ${level}, type: ${type}, workflow: ${workflow}, event: ${event.toString()}\n \n`)
@@ -342,7 +324,26 @@ async function sendSMS(accountName: string, authToken: string, ctx: ColossusCont
 export default {
   routes: {
     sms: async (ctx: ColossusContext) => {
-      console.log('\n\n [ORDER SMS] - Just received a request! \n \n')
+      // fetcher to log events to splunk depends on colossus context
+      function splunkCustomFetcher(context) {
+        const headers = context.headers || {}
+        return axios({
+          ...context,
+          headers: {
+            ...headers,
+            'Proxy-Authorization': ctx.vtex.authToken,
+            'X-Vtex-Proxy-To': `https://${SPLUNK_ENDPOINT}`,
+          }
+        })
+      }
+      console.log('\n\n [ORDER SMS] - Just received a request! Configuring splunk to start... \n \n')
+      splunkEvents.config({
+        debug: true,
+        endpoint: `http://${SPLUNK_ENDPOINT}`,
+        request: splunkCustomFetcher,
+        token: '473bad07-24e0-4c46-964e-d6f059ec8789',
+      })
+      console.log('\n\n [ORDER SMS] - Splunk configured, let\'s start \n \n')
       let { vtex: { account, authToken } } = ctx
       authToken = ctx.vtex.authToken
       ctx.set('Cache-Control', 'no-cache')
@@ -355,7 +356,7 @@ export default {
         account,
         reponseError: res.data.message || 'There was no error in response data...',
         reponseMessage: res.data.message || 'There was no message in response data...',
-        responseStatus: res.status,
+        responseStatus: res.status || 'There was no status in reponse data...',
         sourceType: 'KPI',
       })
       ctx.response.status = res.status
