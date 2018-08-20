@@ -68,6 +68,13 @@
       }
     },
     {
+      "name": "outbound-access",
+      "attrs": {
+        "host": "splunk-heavyforwarder-public.vtex.com",
+        "path": "*"
+      }
+    },
+    {
       "name": "read-workspace-apps"
     },
     {
