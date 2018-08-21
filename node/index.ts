@@ -10,7 +10,7 @@ import { getOrder } from './order-fetcher'
 
 const FUNCTION_NAME = 'seller_newOrderSMSNotification'
 const APP_MAJOR = pkg.version.split('.')[0]
-const SPLUNK_ENDPOINT = 'splunk-heavyforwarder-public.vtex.com:8088'
+const SPLUNK_ENDPOINT = 'splunk-heavyforwarder-public.vtex.com'
 const splunkEvents = new SplunkEvents()
 
 function logEvent(level, type, workflow, event) {
@@ -332,7 +332,7 @@ export default {
           headers: {
             ...headers,
             'Proxy-Authorization': ctx.vtex.authToken,
-            'X-Vtex-Proxy-To': `https://${SPLUNK_ENDPOINT}`,
+            'X-Vtex-Proxy-To': `https://${SPLUNK_ENDPOINT}:8088`,
           }
         })
       }
