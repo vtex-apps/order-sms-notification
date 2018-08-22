@@ -29,8 +29,8 @@ function logEvent(level, type, workflow, event) {
 }
 
 async function getMobileNumberFromSettings({ vtex }) {
-  const filter = `vtex.order-sms-notification@${APP_MAJOR}.x`
-  // const filter = 'vtex.order-sms-notification'
+  // const filter = `vtex.order-sms-notification@${APP_MAJOR}.x`
+  const filter = 'vtex.order-sms-notification'
   const apps = new Apps(vtex)
   let phone
   await apps.getAppSettings(filter).then((r) => {
