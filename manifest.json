@@ -45,7 +45,7 @@
     "vtex.legacy-settings": "0.x"
   },
   "peerDependencies": {
-    "vtex.sms-provider": "0.4.9-beta.0"
+    "vtex.sms-provider": "0.x"
   },
   "policies": [
     {
