@@ -1,7 +1,7 @@
 {
   "name": "order-sms-notification",
   "vendor": "vtex",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "title": "New Order SMS Notification",
   "description": "If like most retailers you must manage all your systems in one single computer, this little feature will notify you when a new VTEX order is approved (ready-for-handling) so you can go about fullfilment.",
   "mustUpdateAt": "2018-09-22",
