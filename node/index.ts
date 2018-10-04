@@ -276,7 +276,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: ColossusCont
       account: accountName,
       bodyAccountName: body.accountName,
       bodyOrderId: body.orderId,
-      message: 'Exiting function, order is NOT inStore so message was not sent...',
+      message: 'Exiting function, order is inStore so message was not sent...',
       mobileNumber,
       responseStatus: 204,
       sourceType: 'KPI',
@@ -300,7 +300,7 @@ async function sendSMS(accountName: string, authToken: string, ctx: ColossusCont
     account: accountName,
     bodyAccountName: body.accountName,
     bodyOrderId: body.orderId,
-    message: 'Order is instore',
+    message: 'Order is NOT instore so SMS was sent',
     mobileNumber,
     sourceType: 'KPI',
     step: 'end'
