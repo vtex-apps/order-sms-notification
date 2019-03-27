@@ -4,12 +4,10 @@ import { json } from 'co-body'
 import { ColossusContext } from 'colossus'
 import SplunkEvents from 'splunk-events'
 
-import pkg from '../manifest.json'
 import { configLog, sendLog } from './log-helper'
 import { getOrder } from './order-fetcher'
 
 const FUNCTION_NAME = 'seller_newOrderSMSNotification'
-const APP_MAJOR = pkg.version.split('.')[0]
 const SPLUNK_ENDPOINT = 'splunk-heavyforwarder-public.vtex.com'
 const splunkEvents = new SplunkEvents()
 
@@ -29,10 +27,9 @@ function logEvent(level, type, workflow, event) {
 }
 
 async function getMobileNumberFromSettings({ vtex }) {
-  // const filter = `vtex.order-sms-notification@${APP_MAJOR}.x`
   const filter = 'vtex.order-sms-notification'
   const apps = new Apps(vtex)
-  let phone
+  let phone = ''
   await apps.getAppSettings(filter).then((r) => {
     phone = r.mobilePhone
     return phone
@@ -50,7 +47,7 @@ function postMessageCenterSMS(accountName, ctx, mobileNumber, selectedDeliveryCh
     step: 'start'
   })
   const payload = getMessageCenterPayload(mobileNumber, selectedDeliveryChannel, orderId, openTextField)
-  const url = `http://sms-provider.vtex.aws-us-east-1.vtex.io/${accountName}/${ctx.vtex.workspace}/api/sms-provider`
+  const url = `http://sms-provider.vtex.aws-us-east-1.vtex.io/${accountName}/${ctx.vtex.workspace}/_v/0/sms`
   console.log('\n\n [SMS PROVIDER] - Starting Request to SMS provider API \n \n')
 
     return axios({
