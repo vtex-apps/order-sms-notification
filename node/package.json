@@ -2,6 +2,9 @@
   "name": "vtex.order-sms-notification",
   "version": null,
   "dependencies": {
+    "@vtex/api": "^2.4.0",
+    "axios": "^0.18.0",
+    "co-body": "^6.0.0",
     "node-fetch": "^2.1.1",
     "splunk-events": "^1.2.3"
   },
