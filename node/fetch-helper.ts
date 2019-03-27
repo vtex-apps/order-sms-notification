@@ -57,7 +57,7 @@ function fetchWithRetries(url, options, retries) {
     })
 }
 
-export default function fetchHelper(url, options = DEFAULT_OPTIONS) {
+function fetchHelper(url, options = DEFAULT_OPTIONS) {
   const fetchOptions = {
     ...options,
     headers: {
@@ -70,3 +70,5 @@ export default function fetchHelper(url, options = DEFAULT_OPTIONS) {
   const retries = options.retries || 1
   return fetchWithRetries(url, fetchOptions, retries)
 }
+
+export default fetchHelper
