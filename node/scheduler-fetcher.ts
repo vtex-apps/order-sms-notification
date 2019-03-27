@@ -29,9 +29,9 @@ const getSchedulerEndpoint = (accountName, app, workspace = 'master') =>
   app && workspace ? `http://api.vtex.com/${accountName}/scheduler` : ''
 
 const getPayloadScheduler = (
-    accountName,
-  functionName,
-  body,
+  accountName,
+  // functionName,
+  // body,
   schedulerId,
   workspace = 'master'
 ) => {
