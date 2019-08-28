@@ -29,7 +29,8 @@
   ],
   "builders": {
     "node": "3.x",
-    "masterdata": "0.x"
+    "masterdata": "0.x",
+    "docs": "0.x"
   },
   "scripts": {
     "postreleasy": "vtex publish --public --verbose"
